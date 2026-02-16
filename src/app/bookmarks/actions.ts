@@ -14,14 +14,18 @@ export async function addBookmark(formData: FormData) {
   const title = formData.get("title") as string;
   if (!url?.trim() || !title?.trim()) return { error: "URL and title required" };
 
-  const { error } = await supabase.from("bookmarks").insert({
-    user_id: user.id,
-    url: url.trim(),
-    title: title.trim(),
-  });
+  const { data: bookmark, error } = await supabase
+    .from("bookmarks")
+    .insert({
+      user_id: user.id,
+      url: url.trim(),
+      title: title.trim(),
+    })
+    .select()
+    .single();
   if (error) return { error: error.message };
   revalidatePath("/bookmarks");
-  return {};
+  return { data: bookmark };
 }
 
 export async function deleteBookmark(id: string) {

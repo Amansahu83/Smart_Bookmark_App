@@ -54,15 +54,22 @@ export function BookmarksClient({ initialBookmarks, userId }: Props) {
     setAdding(true);
     const result = await addBookmark(formData);
     setAdding(false);
-    if (!result.error) {
+    if (!result.error && result.data) {
+      setBookmarks((prev) => [result.data as Bookmark, ...prev]);
       form.reset();
-    } else {
+    } else if (result.error) {
       console.error(result.error);
     }
   }
 
   async function handleDelete(id: string) {
-    await deleteBookmark(id);
+    const removed = bookmarks.find((b) => b.id === id);
+    setBookmarks((prev) => prev.filter((b) => b.id !== id));
+    const result = await deleteBookmark(id);
+    if (result.error && removed) {
+      console.error(result.error);
+      setBookmarks((prev) => [...prev, removed].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+    }
   }
 
   return (
