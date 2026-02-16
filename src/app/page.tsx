@@ -2,7 +2,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
-export default async function HomePage() {
+type Props = { searchParams: { code?: string } };
+
+export default async function HomePage({ searchParams }: Props) {
+  const code = searchParams.code;
+  if (code) redirect(`/auth/callback?code=${encodeURIComponent(code)}`);
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (user) redirect("/bookmarks");
