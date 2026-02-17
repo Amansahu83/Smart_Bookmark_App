@@ -1,7 +1,5 @@
 # Smart Bookmark
 
-A private bookmark manager with Google sign-in and real-time sync across tabs. Built with Next.js (App Router), Supabase (Auth, Database, Realtime), and Tailwind CSS.
-
 ## Setup
 
 ### 1. Clone and install
