@@ -12,7 +12,7 @@ npm install
 
 ### 2. Environment variables
 
-Copy `.env.example` to `.env.local` and set:
+create `.env` and set:
 
 - `NEXT_PUBLIC_SUPABASE_URL` – from Supabase project settings
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` – from Supabase project settings
