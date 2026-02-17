@@ -37,6 +37,5 @@ export async function deleteBookmark(id: string) {
 
   const { error } = await supabase.from("bookmarks").delete().eq("id", id).eq("user_id", user.id);
   if (error) return { error: error.message };
-  revalidatePath("/bookmarks");
-  return {};
+  return { ok: true };
 }

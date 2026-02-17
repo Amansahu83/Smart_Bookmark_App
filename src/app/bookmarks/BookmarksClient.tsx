@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Bookmark } from "@/types/bookmark";
 import { addBookmark, deleteBookmark } from "./actions";
@@ -13,6 +13,7 @@ type Props = {
 export function BookmarksClient({ initialBookmarks, userId }: Props) {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks);
   const [adding, setAdding] = useState(false);
+  const removedRef = useRef<Bookmark | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -63,12 +64,19 @@ export function BookmarksClient({ initialBookmarks, userId }: Props) {
   }
 
   async function handleDelete(id: string) {
-    const removed = bookmarks.find((b) => b.id === id);
-    setBookmarks((prev) => prev.filter((b) => b.id !== id));
+    setBookmarks((prev) => {
+      const removed = prev.find((b) => b.id === id);
+      removedRef.current = removed ?? null;
+      return prev.filter((b) => b.id !== id);
+    });
     const result = await deleteBookmark(id);
-    if (result.error && removed) {
+    if (result?.error) {
       console.error(result.error);
-      setBookmarks((prev) => [...prev, removed].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+      const putBack = removedRef.current;
+      if (putBack) {
+        setBookmarks((prev) => [putBack, ...prev]);
+      }
+      removedRef.current = null;
     }
   }
 
